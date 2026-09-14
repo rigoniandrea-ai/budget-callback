@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Enable Banking - Callback</title>
+<style>
+  body {
+    font-family: -apple-system, Segoe UI, Arial, sans-serif;
+    background: #0f1115;
+    color: #e8e8e8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+  }
+  .box {
+    max-width: 560px;
+    width: 100%;
+  }
+  h1 {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  .ok { color: #4ade80; }
+  .err { color: #f87171; }
+  .label {
+    font-size: 13px;
+    color: #9ca3af;
+    margin-top: 20px;
+    margin-bottom: 6px;
+  }
+  .value {
+    background: #1c1f26;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 14px;
+    font-family: "Courier New", monospace;
+    font-size: 15px;
+    word-break: break-all;
+    user-select: all;
+    cursor: text;
+  }
+  button {
+    margin-top: 12px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  button:hover { background: #1d4ed8; }
+  .hint {
+    font-size: 13px;
+    color: #9ca3af;
+    margin-top: 24px;
+  }
+</style>
+</head>
+<body>
+<div class="box">
+  <h1 id="titolo">Elaborazione in corso...</h1>
+  <div id="contenuto"></div>
+  <div class="hint">Puoi chiudere questa pagina dopo aver copiato il valore che ti serve.</div>
+</div>
+
+<script>
+  const parametri = new URLSearchParams(window.location.search);
+  const code = parametri.get("code");
+  const errore = parametri.get("error");
+  const errDesc = parametri.get("error_description");
+  const state = parametri.get("state");
+
+  const titolo = document.getElementById("titolo");
+  const contenuto = document.getElementById("contenuto");
+
+  function blocco(etichetta, valore) {
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <div class="label">${etichetta}</div>
+      <div class="value">${valore}</div>
+    `;
+    return div;
+  }
+
+  function bottoneCopia(testo) {
+    const btn = document.createElement("button");
+    btn.textContent = "Copia il code";
+    btn.onclick = () => {
+      navigator.clipboard.writeText(testo).then(() => {
+        btn.textContent = "Copiato!";
+        setTimeout(() => (btn.textContent = "Copia il code"), 1500);
+      });
+    };
+    return btn;
+  }
+
+  if (code) {
+    titolo.textContent = "Autorizzazione completata";
+    titolo.className = "ok";
+    contenuto.appendChild(blocco("code (incollalo nello script)", code));
+    contenuto.appendChild(bottoneCopia(code));
+    if (state) contenuto.appendChild(blocco("state", state));
+  } else if (errore) {
+    titolo.textContent = "Autorizzazione non riuscita";
+    titolo.className = "err";
+    contenuto.appendChild(blocco("error", errore));
+    if (errDesc) contenuto.appendChild(blocco("error_description", errDesc));
+  } else {
+    titolo.textContent = "Nessun parametro trovato";
+    contenuto.appendChild(blocco("indirizzo completo", window.location.href));
+  }
+</script>
+</body>
+</html>
