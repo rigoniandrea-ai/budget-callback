@@ -2,6 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
+<meta name="referrer" content="no-referrer">
 <title>Enable Banking - Callback</title>
 <style>
   body {
@@ -78,11 +79,15 @@
   const contenuto = document.getElementById("contenuto");
 
   function blocco(etichetta, valore) {
+    // textContent, non innerHTML: i valori arrivano dall'indirizzo e non vanno interpretati come HTML
     const div = document.createElement("div");
-    div.innerHTML = `
-      <div class="label">${etichetta}</div>
-      <div class="value">${valore}</div>
-    `;
+    const lab = document.createElement("div");
+    lab.className = "label";
+    lab.textContent = etichetta;
+    const val = document.createElement("div");
+    val.className = "value";
+    val.textContent = valore;
+    div.append(lab, val);
     return div;
   }
 
